@@ -1,0 +1,4 @@
+backendImage:
+  tag: "1.3"
+frontendImage:
+  tag: "1.3"

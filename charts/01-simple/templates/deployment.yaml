@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+  name: frontend
+spec:
+  replicas: {{ .Values.frontendReplicaCount }}
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - image: "{{ .Values.frontendImage.repository }}:{{ .Values.frontendImage.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: IfNotPresent
+        name: frontend
+        ports:
+          - containerPort: {{ .Values.frontendTargetPort }}
+        env:
+          - name: BASE_URL
+            value: "http://backend:{{ .Values.backendPort }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+spec:
+  replicas: {{ .Values.backendReplicaCount }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - image: "{{ .Values.backendImage.repository }}:{{ .Values.backendImage.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: IfNotPresent
+        name: backend
+        ports:
+          - containerPort: {{ .Values.backendPort }}
+        env:
+          - name: DATABASE_URL
+            value: "postgres://postgres:postgres@db:{{ .Values.dbPort }}/news"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+spec:
+  replicas: {{ .Values.dbReplicaCount }}
+  serviceName: db
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: db
+          image: "{{ .Values.dbImage.repository }}:{{ .Values.dbImage.tag }}"
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+
+            - name: POSTGRES_PASSWORD
+              value: postgres
+
+            - name: POSTGRES_DB
+              value: news
+          ports:
+            - containerPort: {{ .Values.dbPort }}

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: 13config
+description: A minimal chart for demo
+
+type: application
+
+version: 0.1.2
+appVersion: "1.3"

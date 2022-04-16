@@ -1,0 +1,20 @@
+frontendReplicaCount: 1
+backendReplicaCount: 1
+dbReplicaCount: 1
+
+backendImage:
+  repository: maxnelipin/13-backend
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+frontendImage:
+  repository: maxnelipin/13-frontend
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+dbImage:
+  repository: postgres
+  tag: "13-alpine"
+
+frontendTargetPort: 80
+frontendPort: 8000
+backendPort: 9000
+dbPort: 5432
